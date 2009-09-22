@@ -113,7 +113,8 @@ function fetchStatus(id, user, pass)
 end
 
 --- Fetches current trends.
--- @return table The trends.
+-- @return boolean Success or not
+-- @return unsigned If fail, an error message. If success, the response from twitter
 function fetchTrends()
     local data = get_unauthorized_headers_s:format("/trends.json")
     local success, response = dorequest(data)
