@@ -38,6 +38,12 @@ Host: twitter.com
 
 ]]
 
+local get_unauthorized_headers_s = [[
+GET %s HTTP/1.0
+Host: search.twitter.com
+
+]]
+
 --- (internal) Does requests for a function.
 -- Prevents a lot of code duplication
 -- @param data The data to send to twitter.
@@ -46,7 +52,8 @@ Host: twitter.com
 local function dorequest(data)
 	local sock = socket.tcp()
 	sock:settimeout(15)
-	if not sock:connect("twitter.com", 80) then
+	local host = data:match("Host: ([a-z%.]+)")
+	if not sock:connect(host, 80) then
 		return false, "Could not connect"
 	end
 	if not sock:send(data) then
@@ -80,7 +87,7 @@ function updateStatus(message, user, pass)
 	return true, response
 end
 
---- Fetches a status with this id
+--- Fetches a status by id.
 -- If pass is omitted it uses user as the auth string.
 -- If user is omitted it doesn't authenticate, this prevents you
 -- from reading hidden tweets.
@@ -103,4 +110,15 @@ function fetchStatus(id, user, pass)
 	response = response:match(".-\r\n\r\n(.*)")
 	response = json.decode(response)
 	return true, response
+end
+
+--- Fetches current trends.
+-- @return table The trends.
+function fetchTrends()
+    local data = get_unauthorized_headers_s:format("/trends.json")
+    local success, response = dorequest(data)
+    if not success then return false, response end
+    response = response:match(".-\r\n\r\n(.*)")
+    response = json.decode(response)
+    return true, response.trends
 end
