@@ -139,6 +139,7 @@ function publicTimeline()
 	return true, response
 end
 
+
 --- Gets the friends timeline, your messages and your friends'
 -- The last 4 parameters are optional, and can be used to limit the output
 -- @param user Your username
