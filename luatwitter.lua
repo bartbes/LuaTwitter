@@ -121,4 +121,42 @@ function fetchTrends()
     response = response:match(".-\r\n\r\n(.*)")
     response = json.decode(response)
     return true, response.trends
+    
+--- Gets the friends timeline, your messages and your friends'
+-- The last 4 parameters are optional, and can be used to limit the output
+-- @param user Your username
+-- @param pass Your password
+-- @param since_id Only messages after this id
+-- @param max_id Only messages until this id
+-- @param count Return the last count messages
+-- @param page Return page pages
+-- @return boolean Success or not.
+-- @return unsigned If fail, an error message. If success, the response from twitter.
+function friendsTimeline(user, pass, since_id, max_id, count, page)
+	if not user then return false, "No authentication data passed" end
+	local auth = pass and mime.b64(user .. ":" .. pass) or user
+	local getdata = ""
+	if since_id then
+		if getdata:len() > 0 then getdata = getdata .. "&" end
+		getdata = getdata .. "since_id=" .. since_id
+	end
+	if max_id then
+		if getdata:len() > 0 then getdata = getdata .. "&" end
+		getdata = getdata .. "max_id=" .. max_id
+	end
+	if count then
+		if getdata:len() > 0 then getdata = getdata .. "&" end
+		getdata = getdata .. "count=" .. count
+	end
+	if page then
+		if getdata:len() > 0 then getdata = getdata .. "&" end
+		getdata = getdata .. "page=" .. page
+	end
+	if getdata:len() > 0 then getdata = "?" .. getdata end
+	local data = get_authorized_headers:format("/statuses/friends_timeline.json" .. getdata, auth)
+	local success, response = dorequest(data)
+	if not success then return false, response end
+	response = response:match(".-\r\n\r\n(.*)")
+	response = json.decode(response)
+	return true, response
 end
