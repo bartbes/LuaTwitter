@@ -113,15 +113,19 @@ function fetchStatus(id, user, pass)
 end
 
 --- Fetches current trends.
--- @return table The trends.
-function fetchTrends()
-    local data = get_unauthorized_headers_s:format("/trends.json")
+-- @param cat The category of trends. This can be current, daily, weekly, or empty (to get the current trends).
+-- @return unsigned If fail, an error message. If success, the response from twitter.
+function fetchTrends(cat)
+    local cat = cat or ""
+    if cat:len() > 0 then cat = "/"..cat end
+    local data = get_unauthorized_headers_s:format("/trends" .. cat .. ".json")
     local success, response = dorequest(data)
     if not success then return false, response end
     response = response:match(".-\r\n\r\n(.*)")
     response = json.decode(response)
     return true, response.trends
 end
+
 
 --- Gets the friends timeline, your messages and your friends'
 -- The last 4 parameters are optional, and can be used to limit the output
