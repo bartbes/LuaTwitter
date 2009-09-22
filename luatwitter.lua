@@ -121,7 +121,19 @@ function fetchTrends()
     if not success then return false, response end
     response = response:match(".-\r\n\r\n(.*)")
     response = json.decode(response)
-    return true, response.trends
+    return true, response.
+end
+
+--- Gets the last 20 posts on the public timeline.
+-- @return boolean Success or not
+-- @return unsigned If fail, an error message. If success, the response from twitter
+function publicTimeline()
+	local data = get_unauthorized_headers:format("/statuses/public_timeline.json")
+	local success, response = dorequest(data)
+	if not success then return false, response end
+	response = response:match(".-\r\n\r\n(.*)")
+	response = json.decode(response)
+	return true, response
 end
 
 --- Gets the friends timeline, your messages and your friends'
