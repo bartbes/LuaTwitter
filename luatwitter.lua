@@ -6,7 +6,7 @@ local json = require("json")
 
 module("twitter")
 
-local headers = [[
+local post_authorized_headers = [[
 POST %s HTTP/1.0
 Host: twitter.com
 Authorization: Basic %s
@@ -14,6 +14,28 @@ Content-type: application/x-www-form-urlencoded
 Content-length: %d
 
 %s
+]]
+
+local post_unauthorized_headers = [[
+POST %s HTTP/1.0
+Host: twitter.com
+Content-type: application/x-www-form-urlencoded
+Content-length: %d
+
+%s
+]]
+
+local get_authorized_headers = [[
+GET %s HTTP/1.0
+Host: twitter.com
+Authorization: Basic %s
+
+]]
+
+local get_unauthorized_headers = [[
+GET %s HTTP/1.0
+Host: twitter.com
+
 ]]
 
 --- (internal) Does requests for a function.
@@ -45,12 +67,37 @@ end
 -- @param pass The password.
 -- @return boolean Success or not.
 -- @return unsigned If fail, an error message. If success, the response from twitter.
-function updatestatus(message, user, pass)
+function updateStatus(message, user, pass)
     if not message then return false, "No message passed" end
     if not user then return false, "No authentication passed" end
     local auth = pass and mime.b64(user .. ":" .. pass) or user
 	local postdata = "status=" .. url.escape(message)
-	local data = headers:format("/statuses/update.json", auth, #postdata, postdata)
+	local data = post_authorized_headers:format("/statuses/update.json", auth, #postdata, postdata)
+	local success, response = dorequest(data)
+	if not success then return false, response end
+	response = response:match(".-\r\n\r\n(.*)")
+	response = json.decode(response)
+	return true, response
+end
+
+--- Fetches a status with this id
+-- If pass is omitted it uses user as the auth string.
+-- If user is omitted it doesn't authenticate, this prevents you
+-- from reading hidden tweets.
+-- @param id The status id
+-- @param user Your used id or an auth string
+-- @param pass Your password
+-- @return boolean Success or not.
+-- @return unsigned If fail, an error message. If success, the response from twitter.
+function fetchStatus(id, user, pass)
+	if not id then return false, "No message id passed" end
+	local data
+	if not user then
+		data = get_unauthorized_headers:format("/statuses/show/" .. id .. ".json")
+	else
+		local auth = pass and mime.b64(user .. ":" .. pass) or user
+		data = get_authorized_headers:format("/statuses/show/" .. id .. ".json", auth)
+	end
 	local success, response = dorequest(data)
 	if not success then return false, response end
 	response = response:match(".-\r\n\r\n(.*)")
