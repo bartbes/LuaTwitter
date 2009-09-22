@@ -6,7 +6,7 @@ local json = require("json")
 
 module("twitter")
 
-local tweetheaders = [[
+local headers = [[
 POST %s HTTP/1.0
 Host: twitter.com
 Authorization: Basic %s
@@ -16,9 +16,11 @@ Content-length: %d
 %s
 ]]
 
---- Does requests for a function [INTERNAL]
+--- (internal) Does requests for a function.
 -- Prevents a lot of code duplication
--- @param data The data to send to twitter
+-- @param data The data to send to twitter.
+-- @return boolean Success or not.
+-- @return unsigned If fail, an error message. If success, the response from twitter.
 local function dorequest(data)
 	local sock = socket.tcp()
 	sock:settimeout(15)
@@ -30,22 +32,25 @@ local function dorequest(data)
 	end
 	local response = sock:receive("*a")
 	if not response then
-		return falce, "Could not receive data"
+		return false, "Could not receive data"
 	end
 	sock:close()
 	return true, response
 end
 
 --- Updates a user's status on Twitter.
+-- If pass is omitted it uses user as the auth string.
 -- @param message The message to tweet.
 -- @param user The user to tweet as -OR- the mime64 encoded auth string.
--- @param pass If specified it will use user:pass authentication.
+-- @param pass The password.
+-- @return boolean Success or not.
+-- @return unsigned If fail, an error message. If success, the response from twitter.
 function updatestatus(message, user, pass)
     if not message then return false, "No message passed" end
     if not user then return false, "No authentication passed" end
     local auth = pass and mime.b64(user .. ":" .. pass) or user
 	local postdata = "status=" .. url.escape(message)
-	local data = tweetheaders:format("/statuses/update.json", auth, #postdata, postdata)
+	local data = headers:format("/statuses/update.json", auth, #postdata, postdata)
 	local success, response = dorequest(data)
 	if not success then return false, response end
 	response = response:match(".-\r\n\r\n(.*)")
