@@ -121,7 +121,8 @@ function fetchTrends()
     response = response:match(".-\r\n\r\n(.*)")
     response = json.decode(response)
     return true, response.trends
-    
+end
+
 --- Gets the friends timeline, your messages and your friends'
 -- The last 4 parameters are optional, and can be used to limit the output
 -- @param user Your username
