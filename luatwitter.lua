@@ -249,3 +249,19 @@ function getFollowers(id)
 	response = json.decode(response)
 	return true, response
 end
+
+--- Gets the people a user is following
+-- @param id A screen name or user id
+-- @return boolean Success or not
+-- @return unsigned If fail, an error message. If success, the response from twitter
+function getFollowing(id)
+    if not id then
+		return false, "No search information provided"
+	end
+	local data = get_unauthorized_headers:format("/statuses/friends/" .. id .. ".json")
+	local success, response = dorequest(data)
+	if not success then return false, response end
+	response = response:match(".-\r\n\r\n(.*)")
+	response = json.decode(response)
+	return true, response
+end
