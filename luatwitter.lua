@@ -253,11 +253,11 @@ end
 function getFollowers(id, user_id, screen_name)
     local data
 	if id then
-        data = get_unauthorized_headers:format("/users/followers/" .. id .. ".json")
+        data = get_unauthorized_headers:format("/statuses/followers/" .. id .. ".json")
     elseif user_id then
-        data = get_unauthorized_headers:format("/users/followers.json?user_id=" .. user_id)
+        data = get_unauthorized_headers:format("/statuses/followers.json?user_id=" .. user_id)
     elseif screen_name then
-        data = get_unauthorized_headers:format("/users/followers.json?screen_name=" .. url.escape(screen_name))
+        data = get_unauthorized_headers:format("/statuses/followers.json?screen_name=" .. url.escape(screen_name))
     else
 		return false, "No search information provided"
 	end
@@ -278,11 +278,11 @@ end
 function getFollowing(id, user_id, screen_name)
     local data
 	if id then
-        data = get_unauthorized_headers:format("/users/friends/" .. id .. ".json")
+        data = get_unauthorized_headers:format("/statuses/friends/" .. id .. ".json")
     elseif user_id then
-        data = get_unauthorized_headers:format("/users/friends.json?user_id=" .. user_id)
+        data = get_unauthorized_headers:format("/statuses/friends.json?user_id=" .. user_id)
     elseif screen_name then
-        data = get_unauthorized_headers:format("/users/friends.json?screen_name=" .. url.escape(screen_name))
+        data = get_unauthorized_headers:format("/statuses/friends.json?screen_name=" .. url.escape(screen_name))
     else
 		return false, "No search information provided"
 	end
