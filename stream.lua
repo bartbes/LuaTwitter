@@ -5,20 +5,31 @@ local mime = require("mime")
 local tcp = socket.tcp()
 local sf = string.format
 
+local page = "sample.json"
+local action = print
 if not arg[1] and not arg[2] then
     print("You need to specify a valid user name and password!")
-    print("Example: "..arg[0].." thelinx secret")
+    print("Example: "..arg[0].." thelinx secret [filter] [action]")
     return
+end
+if arg[3] then
+    page = "filter.json?track="..arg[3]
+end
+if arg[4] then
+    function action(string)
+        print(string)
+        os.execute(sf(arg[4], string:gsub("<", "&lt;"):gsub(">", "&gt;")))
+    end
 end
 
 tcp:settimeout(15)
 tcp:connect("stream.twitter.com", 80)
 tcp:send(sf([[
-GET /1/statuses/sample.json HTTP/1.0
+GET /1/statuses/%s HTTP/1.0
 Host: stream.twitter.com
 Authorization: Basic %s
 
-]], mime.b64(arg[1]..":"..arg[2])))
+]], page, mime.b64(arg[1]..":"..arg[2])))
 
 while true do
     local tw = tcp:receive("*l")
@@ -26,7 +37,7 @@ while true do
     if tw:len() > 50 then
         local t = json.decode(tw)
         if t.user and t.text then
-            print(sf("<%s> %s", t.user.screen_name, t.text))
+            action(sf("<%s> %s", t.user.screen_name, t.text))
         end
     end
 end
