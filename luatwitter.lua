@@ -223,11 +223,26 @@ end
 -- @return boolean Success or not
 -- @return unsigned If fail, an error message. If success, the response from twitter
 function showUser(id)
-	local data
 	if not id then
 		return false, "No search information provided"
 	end
-	data = get_unauthorized_headers:format("/users/show/" .. id .. ".json")
+	local data = get_unauthorized_headers:format("/users/show/" .. id .. ".json")
+	local success, response = dorequest(data)
+	if not success then return false, response end
+	response = response:match(".-\r\n\r\n(.*)")
+	response = json.decode(response)
+	return true, response
+end
+
+--- Gets the followers from a user
+-- @param id A screen name or user id
+-- @return boolean Success or not
+-- @return unsigned If fail, an error message. If success, the response from twitter
+function getFollowers(id)
+    if not id then
+		return false, "No search information provided"
+	end
+	local data = get_unauthorized_headers:format("/statuses/followers/" .. id .. ".json")
 	local success, response = dorequest(data)
 	if not success then return false, response end
 	response = response:match(".-\r\n\r\n(.*)")
