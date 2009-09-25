@@ -140,7 +140,7 @@ function publicTimeline()
 end
 
 
---- Gets the friends timeline, your messages and your friends'
+--- Gets the friends timeline; your messages and your friends'.
 -- The last 4 parameters are optional, and can be used to limit the output
 -- @param user Your username
 -- @param pass Your password
@@ -179,7 +179,7 @@ function friendsTimeline(user, pass, since_id, max_id, count, page)
 	return true, response
 end
 
---- Gets the last tweets mentioning you
+--- Gets the last tweets mentioning you.
 -- The last 4 parameters are optional, and can be used to limit the output
 -- @param user Your username
 -- @param pass Your password
@@ -218,15 +218,24 @@ function fetchMentions(user, pass, since_id, max_id, count, page)
 	return true, response
 end
 
---- Gets user information
+--- Gets user information.
+-- You need ONLY ONE of the following paramers (use nil/false for the others)
 -- @param id A screen name or user id
+-- @param user_id A user id
+-- @param screen_name A screen name
 -- @return boolean Success or not
 -- @return unsigned If fail, an error message. If success, the response from twitter
-function showUser(id)
-	if not id then
+function showUser(id, user_id, screen_name)
+    local data
+	if id then
+        data = get_unauthorized_headers:format("/users/show/" .. id .. ".json")
+    elseif user_id then
+        data = get_unauthorized_headers:format("/users/show.json?user_id=" .. user_id)
+    elseif screen_name then
+        data = get_unauthorized_headers:format("/users/show.json?screen_name=" .. url.escape(screen_name))
+    else
 		return false, "No search information provided"
 	end
-	local data = get_unauthorized_headers:format("/users/show/" .. id .. ".json")
 	local success, response = dorequest(data)
 	if not success then return false, response end
 	response = response:match(".-\r\n\r\n(.*)")
@@ -234,15 +243,24 @@ function showUser(id)
 	return true, response
 end
 
---- Gets the followers from a user
+--- Gets the followers from a user.
+-- You need ONLY ONE of the following paramers (use nil/false for the others)
 -- @param id A screen name or user id
+-- @param user_id A user id
+-- @param screen_name A screen name
 -- @return boolean Success or not
 -- @return unsigned If fail, an error message. If success, the response from twitter
-function getFollowers(id)
-    if not id then
+function getFollowers(id, user_id, screen_name)
+    local data
+	if id then
+        data = get_unauthorized_headers:format("/users/followers/" .. id .. ".json")
+    elseif user_id then
+        data = get_unauthorized_headers:format("/users/followers.json?user_id=" .. user_id)
+    elseif screen_name then
+        data = get_unauthorized_headers:format("/users/followers.json?screen_name=" .. url.escape(screen_name))
+    else
 		return false, "No search information provided"
 	end
-	local data = get_unauthorized_headers:format("/statuses/followers/" .. id .. ".json")
 	local success, response = dorequest(data)
 	if not success then return false, response end
 	response = response:match(".-\r\n\r\n(.*)")
@@ -250,15 +268,24 @@ function getFollowers(id)
 	return true, response
 end
 
---- Gets the people a user is following
+--- Gets the people a user is following.
+-- You need ONLY ONE of the following paramers (use nil/false for the others)
 -- @param id A screen name or user id
+-- @param user_id A user id
+-- @param screen_name A screen name
 -- @return boolean Success or not
 -- @return unsigned If fail, an error message. If success, the response from twitter
-function getFollowing(id)
-    if not id then
+function getFollowing(id, user_id, screen_name)
+    local data
+	if id then
+        data = get_unauthorized_headers:format("/users/friends/" .. id .. ".json")
+    elseif user_id then
+        data = get_unauthorized_headers:format("/users/friends.json?user_id=" .. user_id)
+    elseif screen_name then
+        data = get_unauthorized_headers:format("/users/friends.json?screen_name=" .. url.escape(screen_name))
+    else
 		return false, "No search information provided"
 	end
-	local data = get_unauthorized_headers:format("/statuses/friends/" .. id .. ".json")
 	local success, response = dorequest(data)
 	if not success then return false, response end
 	response = response:match(".-\r\n\r\n(.*)")
