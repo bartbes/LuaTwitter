@@ -2,3 +2,6 @@ To use this program you need:
 	- Lua 5.1 or higher
 	- LuaSocket 2.0 or higher
 	- JSON4Lua 0.9.40 or higher (included)
+
+To install:
+    - Put the luatwitter.lua file (or a symbolic link to it) in your LUA_PATH (usually /usr/share/lua/5.1/)
