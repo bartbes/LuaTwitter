@@ -13,7 +13,11 @@ if not arg[1] and not arg[2] then
     return
 end
 if arg[3] then
-    page = "filter.json?track="..arg[3]
+    if tonumber((arg[3]:gsub(",", ""))) then
+        page = "filter.json?follow="..arg[3]
+    else
+        page = "filter.json?track="..arg[3]
+    end
 end
 if arg[4] then
     function action(string)
@@ -22,7 +26,7 @@ if arg[4] then
     end
 end
 
-tcp:settimeout(15)
+tcp:settimeout(99999999)
 tcp:connect("stream.twitter.com", 80)
 tcp:send(sf([[
 GET /1/statuses/%s HTTP/1.0
