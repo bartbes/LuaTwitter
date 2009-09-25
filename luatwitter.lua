@@ -219,23 +219,15 @@ function fetchMentions(user, pass, since_id, max_id, count, page)
 end
 
 --- Gets user information
--- You need to use ONLY ONE of the following paramers (use nil/false for the others)
 -- @param id A screen name or user id
--- @param user_id A user id
--- @param screen_name A screen name
 -- @return boolean Success or not
 -- @return unsigned If fail, an error message. If success, the response from twitter
-function showUser(id, user_id, screen_name)
+function showUser(id)
 	local data
-	if id then
-		data = get_unauthorized_headers:format("/users/show/" .. id .. ".json")
-	elseif user_id then
-		data = get_unauthorized_headers:format("/users/show.json?user_id=" .. user_id)
-	elseif screen_name then
-		data = get_unauthorized_headers:format("/users/show.json?screen_name=" .. url.escape(screen_name))
-	else
+	if not id then
 		return false, "No search information provided"
 	end
+	data = get_unauthorized_headers:format("/users/show/" .. id .. ".json")
 	local success, response = dorequest(data)
 	if not success then return false, response end
 	response = response:match(".-\r\n\r\n(.*)")
