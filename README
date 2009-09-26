@@ -5,3 +5,12 @@ To use this program you need:
 
 To install:
     - Put the luatwitter.lua file (or a symbolic link to it) in your LUA_PATH (usually /usr/share/lua/5.1/)
+
+To set up the TweetStreamer:
+    - Run the following command in the luatwitter directory:
+    $ lua -e 'require("luatwitter") _,t = twitter.getFollowing("*YOUR USERNAME*") s = "" for _,v in pairs(t) do s = s..","..v.id end print(s:sub(2))'
+    - You'll get a long string with the people you're following's id's.
+    - Now run the following command:
+    $ screen ./stream.lua *YOUR USERNAME* *YOUR PASSWORD* *FOLLOWER STRING* 'notify-send -u normal -t 10000 -i info "Mentioned on Twitter" "%s"'
+    - Press Ctrl+A+D.
+    - You now have an instant tweet-alert!
