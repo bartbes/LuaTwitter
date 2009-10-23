@@ -1,10 +1,10 @@
 To use this program you need:
 	- Lua 5.1 or higher
-	- LuaSocket 2.0 or higher
-	- JSON4Lua 0.9.40 or higher (included)
+	- LuaSocket 2.0 or higher (luarocks install luasocket)
+	- JSON4Lua 0.9.40 or higher (luarocks install json4lua)
 
 To install:
-    - Put the luatwitter.lua file (or a symbolic link to it) in your LUA_PATH (usually /usr/share/lua/5.1/)
+    - Put the twitter.lua file (or a symbolic link to it) in your LUA_PATH (usually /usr/share/lua/5.1/)
 
 To set up the TweetStreamer:
     - Run the following command in the luatwitter directory:
